@@ -24,8 +24,8 @@ start:
 	MOV BL, DL
 	MOV AL, losuj[BX]
     ADD nr_linii, AL
-    MOV AH, 02h
-	INT 21h
+    ; MOV AH, 02h
+	; INT 21h
 	
 	MOV AL, 160
 	MUL nr_linii
@@ -51,6 +51,14 @@ start:
 	POP DS
 	
 	;POKOLORUJ
+	mov cx,80   ;ile razy wypisać dany znak
+	petla: 
+		mov ah,9   ;nr funkcji przerwania 10h
+		mov al,219   ;kod ASCII danego znaku
+		mov bh,0   ;strona video (zazwyczaj 0)
+		mov bl,0ah   ;nr koloru
+		int 10h   ;wywołanie przerwania nr 10h
+	loop petla
 
 	;SLEEP ~1S
 		MOV CX,16
@@ -78,6 +86,7 @@ dane	segment
 	; bgkolor 00h, 01h, 02h, 03h, 04h, 05h, 06h, 07h
 	; fgkolor 00h, 01h, 02h, 03h, 04h, 05h, 06h, 07h, 08h, 09h, 0ah, 0bh, 0ch, 0dh, 0eh, 0fh
 	; znak equ bgkolor[0502h]
+	kolor equ 0Ah
 	sign equ 0520h
 	bufor db 160 dup(?)
 	nr_linii db 2 
