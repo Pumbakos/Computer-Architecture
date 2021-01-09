@@ -50,6 +50,13 @@ start:
 	REP MOVSW
 	POP DS
 	
+	;USTAW KURSOR NA WYLOSOWANĄ LINIĘ
+	MOV AH, 02h
+	MOV BH, 0
+	MOV DH, nr_linii
+	MOV DL, 0
+	INT 10h
+
 	;POKOLORUJ
 	mov cx,80   ;ile razy wypisać dany znak
 	petla: 
