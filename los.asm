@@ -11,6 +11,7 @@ start:
 
 	MOV SP, offset szczyt
 
+pocz:
 	;LOSOWANIE
 	MOV AH, 00h  ; interrupts to get system time
     INT 1AH      ; CX:DX now hold number of clock ticks since midnight
@@ -27,10 +28,9 @@ start:
     ; MOV AH, 02h
 	; INT 21h
 	
-	MOV AL, 160
+	MOV AX, 160
 	MUL nr_linii
 	MOV poczatek, AX
-	
 
 	;PAMIETAJ LINIĘ
 	CLD
@@ -44,7 +44,7 @@ start:
 	MOV SI, poczatek
 	REP MOVSW
 	POP DS
-	
+
 	;USTAW KURSOR NA WYLOSOWANĄ LINIĘ
 	MOV AH, 02h
 	MOV BH, 0
@@ -58,7 +58,7 @@ start:
 		MOV AH,9   ;nr funkcji przerwania 10h
 		MOV AL,219   ;kod ASCII danego znaku
 		MOV BH,0   ;strona video (zazwyczaj 0)
-		MOV BL,09h   ;nr koloru
+		MOV BL,0b9h   ;nr koloru
 		int 10h   ;wywołanie przerwania nr 10h
 	LOOP petla
 
@@ -72,25 +72,21 @@ skok:	PUSH CX
 		POP CX
 		LOOP skok
 
-	;USTAW KURSOR NA WYLOSOWANĄ LINIĘ
-	MOV AH, 02h
-	MOV BH, 0
-	MOV DH, nr_linii
-	MOV DL, 0
-	INT 10h
-
 	;PRZYWRÓC LINIĘ
 	CLD
 	MOV CX,80
-	PUSH DS
-	PUSH DS
-	POP ES
 	MOV AX, 0B800h
 	MOV ES,AX
-	MOV SI, OFFSET bufor
 	MOV DI, poczatek
+	MOV SI, OFFSET bufor
 	REP MOVSW
-	POP ES
+
+	;SPRAWDZA NACIEŚNIECIE KLAWISZA
+	MOV AH, 01h
+	INT 16h
+
+	;JEŻELI NIE KLAWISZ WCIŚNIĘTO Z=1, POWRÓT NA POCZĄTEK
+	JZ pocz
 
 koniec: MOV AL,0h
 		MOV AH,4Ch                                        ;koniec programu
